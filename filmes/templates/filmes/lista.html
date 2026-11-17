@@ -1,0 +1,46 @@
+<h1>Minha watchlist</h1>
+
+{% if request.session.nome_visitante %}
+    <p>Olá, {{ request.session.nome_visitante }}!</p>
+    <form method="post" action="{% url 'esquecer_nome' %}">
+        {% csrf_token %}
+        <button type="submit">Esquecer meu nome</button>
+    </form>
+{% else %}
+    <form method="post" action="{% url 'salvar_nome' %}">
+        {% csrf_token %}
+        <label for="nome">Como quer ser chamado?</label>
+        <input id="nome" name="nome" maxlength="40" required>
+        <button type="submit">Lembrar meu nome</button>
+    </form>
+    <p>Olá, visitante!</p>
+{% endif %}
+
+
+<a href="{% url 'novo' %}">+ Novo filme</a>
+
+<ul>
+    {% for filme in filmes %}
+    <li>
+
+        <form action="{% url 'excluir' filme.id %}" method="post">
+            {% csrf_token %}
+            {{ filme.titulo }} ({{ filme.ano }})
+            <a href="{% url 'editar' filme.id %}">Editar</a>
+            <button>Excluir</button>
+        </form>
+    </li>
+
+    {% empty %}
+        <li>Nenhum filme cadastrado.</li>
+    {% endfor %}
+</ul>
+<footer>
+    <p>Últmo filme visto: 
+        {% if request.session.ultimo_filme %}
+            {{request.session.ultimo_filme}}
+        {% endif %}
+    </p>
+    <p>Quantidade de favoritos na lista: {{ request.session.favoritos|length }} filmes</p>
+    <p>Você acessou está página {{ request.session.visitas }} vezes</p>
+</footer>
